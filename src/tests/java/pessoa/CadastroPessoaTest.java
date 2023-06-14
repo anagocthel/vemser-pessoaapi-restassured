@@ -30,7 +30,7 @@ public class CadastroPessoaTest extends BaseTest {
         client.cadastroPessoas(pessoaValida)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("mensagem", Matchers.equalTo("Campo CPF inválido"));
+                .body("errors", Matchers.hasItem(Matchers.equalTo("cpf: must not be invalid")));
     }
 
     //Retornou 200 ao invés de não permitir
@@ -41,7 +41,7 @@ public class CadastroPessoaTest extends BaseTest {
         client.cadastroPessoas(pessoaCPFInvalido)
                 .then()
                     .statusCode(HttpStatus.SC_BAD_REQUEST)
-                    .body("mensagem", Matchers.equalTo("Campo CPF inválido"));
+                    .body("errors", Matchers.hasItem(Matchers.equalTo("cpf: must not be blank")));
     }
 
     @Test
@@ -50,8 +50,8 @@ public class CadastroPessoaTest extends BaseTest {
         pessoaInvalida.setNome("");
         client.cadastroPessoas(pessoaInvalida)
                 .then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("mensagem", Matchers.equalTo("Campo nome não pode ser nulo\""));
+                    .statusCode(HttpStatus.SC_BAD_REQUEST)
+                    .body("errors", Matchers.hasItem(Matchers.equalTo("nome: must not be blank")));
     }
 
     @Test
@@ -61,9 +61,10 @@ public class CadastroPessoaTest extends BaseTest {
         client.cadastroPessoas(pessoaInvalida)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("mensagem", Matchers.equalTo("Campo data nascimento não pode ser nulo\""));
+                .body("errors",Matchers.hasItem(Matchers.equalTo("dataNascimento: must not be null")));
     }
 
+    //Retornou 500 e deveria retornar 400
     @Test
     public void testDeveValidarMsgErroPessoaSemEmail(){
         PessoaModel pessoaInvalida = PessoaDataFactory.pessoaValida();
@@ -71,6 +72,6 @@ public class CadastroPessoaTest extends BaseTest {
         client.cadastroPessoas(pessoaInvalida)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
-                .body("mensagem", Matchers.equalTo("Campo email não pode ser nulo\""));
+                .body("errors",Matchers.hasItem(Matchers.equalTo("email: must not be blank")));
     }
 }
